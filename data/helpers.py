@@ -16,3 +16,9 @@ class RandomData:
 
     def generate_random_color():
         color = random.choice(["BLACK", "GREY", ""])
+
+class TextResponse:
+    DUPLICATE_LOGIN = "Этот логин уже используется. Попробуйте другой."
+    MISSING_FIELDS = "Недостаточно данных для создания учетной записи"
+    LOGIN_DATA_MISSING = "Недостаточно данных для входа"
+    USER_NOT_FOUND = "Учетная запись не найдена"

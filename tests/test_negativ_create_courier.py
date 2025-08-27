@@ -2,84 +2,48 @@ import allure
 import pytest
 import requests
 from data.urls import Urls
+from data.helpers import TextResponse as TR
+
+
+
+@allure.suite("Создание курьера / Негативный сценарий")
+class TestNegativCreateCourier:
+
+    @allure.title("Создание курьера — без обязательного поля")
+    @pytest.mark.parametrize("missing_key", ["password", "login"])
+    def test_create_courier_no_data(self, courier_create, missing_key):
+
+        with allure.step(f'Ловим ошибку при создании курьера без обязательного поля {missing_key}'):
+            creds = {"login": courier_create["login"], "password": courier_create["password"]}
+            creds.pop(missing_key)
+            response = requests.post(Urls.CREATE_COURIER_URL, json = creds)            
+            assert response.status_code == 400
+            assert response.json()["message"]  == TR.MISSING_FIELDS
 
 
 
 
-@allure.title("Создание курьера — без обязательного поля (login/password)")
-@pytest.mark.parametrize("missing_key", ["password", "login"])
+    @allure.title("Дублирование курьера")
+    def test_create_doble_courier(self, courier_create):
 
-def test_create_courier_no_data(courier, missing_key):
-    with allure.step(f'Ловим ошибку при создании курьера без обязательного поля {missing_key}'):
-        courier.pop(missing_key)
-        
-        response = requests.post(Urls.CREATE_COURIER_URL, json = courier)
-        
-        assert response.status_code == 400
-        assert response.json()["message"]  == "Недостаточно данных для создания учетной записи"
+        with allure.step('Ловим ошибку при создании курьера с теми же данными (полный дубль)'):
+            response = requests.post(Urls.CREATE_COURIER_URL, json = courier_create)
+            assert response.status_code == 409
+            assert response.json()["message"] == TR.DUPLICATE_LOGIN
 
-
-
-
-@allure.title("Дублирование курьера")
-
-def test_create_doble_courier(courier):
-
-    with allure.step('Создаем нового курьера'):
-        response = requests.post(Urls.CREATE_COURIER_URL, json = courier)
     
-        assert response.status_code == 201
-        assert response.json() == {"ok": True}
 
-    with allure.step('Ловим ошибку при создании курьера с теми же данными (полный дубль)'):
-        response = requests.post(Urls.CREATE_COURIER_URL, json = courier)
-    
-        assert response.status_code == 409
-        assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
+    @allure.title("Создание курьера с уже существующим логином")
 
-    login_data = {
-        "login": courier["login"],
-        "password": courier["password"] }
-    
-    with allure.step('Логинимся и удаляем курьера'):
-        response = requests.post(Urls.LOGIN_COURIER_URL, json = login_data)
-        id_courier = response.json()['id']
-        del_courier = requests.delete(f'{Urls.ID_COURIER_URL}{id_courier}')
-        
-        assert del_courier.status_code  == 200
-        assert del_courier.json() == {"ok": True}
+    def test_create_same_login(self, courier_create):
 
+        wrong_courier_create = {
+            "login": courier_create["login"],
+            "password": courier_create["password"] + "_new",
+            "firstName": courier_create["firstName"] + "_new"}
+        with allure.step('Ловим ошибку при создании курьера с таким же логином'):
+            response = requests.post(Urls.CREATE_COURIER_URL, json = wrong_courier_create)
+            assert response.status_code == 409
+            assert response.json()["message"] == TR.DUPLICATE_LOGIN
 
-@allure.title("Создание курьера с уже существующим логином")
-
-def test_create_doble_courier(courier):
-    with allure.step('Создаем нового курьера'):
-        response = requests.post(Urls.CREATE_COURIER_URL, json = courier)
-    
-        assert response.status_code == 201
-        assert response.json() == {"ok": True}
-
-
-    clone_login_courier = {
-        "login": courier["login"],
-        "password": courier["password"] + "_new",
-        "firstName": courier["firstName"] + "_new",
-    }
-    with allure.step('Ловим ошибку при создании курьера с таким же логином'):
-        response = requests.post(Urls.CREATE_COURIER_URL, json = clone_login_courier)
-    
-        assert response.status_code == 409
-        assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
-
-    login_data = {
-        "login": courier["login"],
-        "password": courier["password"] }
-    
-    with allure.step('Логинимся и удаляем курьера'):
-        response = requests.post(Urls.LOGIN_COURIER_URL, json = login_data)
-        id_courier = response.json()['id']
-        del_courier = requests.delete(f'{Urls.ID_COURIER_URL}{id_courier}')
-        
-        assert del_courier.status_code  == 200
-        assert del_courier.json() == {"ok": True}
 

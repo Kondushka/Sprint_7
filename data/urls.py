@@ -5,4 +5,5 @@ class Urls:
     ID_COURIER_URL = f"{CREATE_COURIER_URL}/"
     ORDER_URL = f"{HOME_URL_API}orders"
     CANCEL_ORDER_URL = f"{ORDER_URL}/cancel"
+
     
