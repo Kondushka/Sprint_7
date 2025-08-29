@@ -1,7 +1,6 @@
 import allure
 import requests
 from data.urls import Urls
-from data.helpers import RandomData as R
 
 
 @allure.suite("Создание курьера / Позитивный сценарий")

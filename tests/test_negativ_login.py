@@ -2,7 +2,7 @@ import allure
 import requests
 import pytest
 from data.urls import Urls
-from data.helpers import TextResponse as TR
+from data.data import TextResponse as TR
 
 @allure.suite("Вход в систему / Негативный сценарий")
 class TestNegativLogin:

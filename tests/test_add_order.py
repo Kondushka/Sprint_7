@@ -13,9 +13,9 @@ class TestOtrder:
         order_data, track_order = order
         grey_order = {**order_data, "color": ["GREY"]}
         order_response = requests.post(Urls.ORDER_URL, json = grey_order)
+        track_order["track"] = order_response.json()["track"]
         assert order_response.status_code == 201
         assert 'track' in order_response.json()
-        track_order["track"] = order_response.json()["track"]
 
 
 
@@ -25,9 +25,10 @@ class TestOtrder:
         order_data, track_order = order
         gblack_order = {**order_data, "color": ["BLACK"]}
         order_response = requests.post(Urls.ORDER_URL, json = gblack_order)
+        track_order["track"] = order_response.json()["track"]        
         assert order_response.status_code == 201
         assert 'track' in order_response.json()
-        track_order["track"] = order_response.json()["track"]
+
 
 
     @allure.title("Создание заказа — цвета: GREY and BLACK")
@@ -36,9 +37,10 @@ class TestOtrder:
         order_data, track_order = order
         both_colors = {**order_data, "color": ["GREY", "BLACK"]}
         order_response = requests.post(Urls.ORDER_URL, json = both_colors)
+        track_order["track"] = order_response.json()["track"]
         assert order_response.status_code == 201
         assert 'track' in order_response.json()        
-        track_order["track"] = order_response.json()["track"]
+        
 
 
     @allure.title("Создание заказа без цвета")
@@ -46,7 +48,7 @@ class TestOtrder:
 
         order_data, track_order = order
         order_response = requests.post(Urls.ORDER_URL, json = order_data)
-
+        track_order["track"] = order_response.json()["track"]
         assert order_response.status_code == 201
         assert 'track' in order_response.json()      
-        track_order["track"] = order_response.json()["track"]
+        

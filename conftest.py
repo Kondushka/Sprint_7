@@ -12,12 +12,7 @@ def courier_data():
     }
 
 @pytest.fixture
-def courier_create():
-    courier_data = {
-        "login": R.generate_random_string(5),
-        "password": R.generate_random_string(9),
-        "firstName": R.generate_random_string(4),
-    }
+def courier_create(courier_data):
 
     requests.post(Urls.CREATE_COURIER_URL, json = courier_data)
 

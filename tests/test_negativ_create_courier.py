@@ -2,7 +2,7 @@ import allure
 import pytest
 import requests
 from data.urls import Urls
-from data.helpers import TextResponse as TR
+from data.data import TextResponse as TR
 
 
 
