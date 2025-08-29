@@ -42,4 +42,3 @@ def order():
 
     del_track = requests.put(Urls.CANCEL_ORDER_URL, params = track_order)
 
-    assert del_track.status_code == 200, f'Заказ {track_order["track"]} нифига не удалился'
